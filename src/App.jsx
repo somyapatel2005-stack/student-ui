@@ -1,21 +1,33 @@
 import { useEffect, useState } from "react";
 import { getStudents } from "./api";
+import StudentForm from "./StudentForm";
 
 function App() {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
+  const loadStudents = () => {
     getStudents()
-      .then((data) => setStudents(data))
+      .then((data) => {
+        setStudents(data);
+        setError("");
+      })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadStudents();
   }, []);
 
   return (
     <div className="container">
       <h1>Student Manager</h1>
+
+      <StudentForm onSaved={loadStudents} />
+
+      <h2>Students</h2>
 
       {loading && <p>Loading...</p>}
       {error && <p className="error">{error}</p>}
@@ -34,7 +46,7 @@ function App() {
           <tbody>
             {students.length === 0 ? (
               <tr>
-                <td colSpan="5">Student not found</td>
+                <td colSpan="5">Koi student nahi mila</td>
               </tr>
             ) : (
               students.map((s) => (
